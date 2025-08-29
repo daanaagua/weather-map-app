@@ -44,7 +44,7 @@ export function coordinatesToSVGPath(coordinates: number[][][], bounds: MapBound
       const pathCommands: string[] = [];
       
       ring.forEach((coord, coordIndex) => {
-        const [lng, lat] = coord;
+        const [lng, lat] = coord as unknown as [number, number];
         const { x, y } = projectCoordinate({ lat, lng }, bounds);
         
         if (coordIndex === 0) {

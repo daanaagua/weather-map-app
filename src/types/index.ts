@@ -30,7 +30,25 @@ export interface GeoData {
 
 // 天气数据相关类型
 export interface WeatherData {
+  location?: {
+    name: string;
+    lat: number;
+    lng: number;
+    latitude: number;
+    longitude: number;
+  };
+  temperature?: number;
+  humidity?: number;
+  windSpeed?: number;
+  weatherCode?: number;
+  pressure?: number;
+  cloudCover?: number;
+  precipitation?: number;
+  windDirection?: number;
+  apparentTemperature?: number;
+  isDay?: boolean;
   current: {
+    time: string;
     temperature_2m: number;
     relative_humidity_2m: number;
     wind_speed_10m: number;

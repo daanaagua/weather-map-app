@@ -196,7 +196,7 @@ const SVGMap: React.FC<SVGMapProps> = ({
         {mapData.features.map((feature, index) => {
           if (feature.geometry.type !== 'MultiPolygon') return null;
           
-          const path = coordinatesToSVGPath(feature.geometry.coordinates, bounds);
+          const path = coordinatesToSVGPath(feature.geometry.coordinates as unknown as number[][][], bounds);
           const regionName = feature.properties.name;
           
           return (

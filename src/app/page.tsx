@@ -32,6 +32,8 @@ export default function HomePage() {
         ...weather,
         location: {
           name: regionName,
+          lat: coordinates[1],
+          lng: coordinates[0],
           latitude: coordinates[1],
           longitude: coordinates[0]
         }
@@ -57,6 +59,8 @@ export default function HomePage() {
       ...weatherData,
       location: {
         name: location.name,
+        lat: location.latitude,
+        lng: location.longitude,
         latitude: location.latitude,
         longitude: location.longitude
       }
