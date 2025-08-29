@@ -46,7 +46,7 @@ export default function HomePage() {
   }, []);
 
   // 处理搜索位置选择
-  const handleLocationSelect = useCallback((location: any, weatherData: WeatherData) => {
+  const handleLocationSelect = useCallback((location: {name: string, latitude: number, longitude: number}, weatherData: WeatherData) => {
     setSearchLocation({
       name: location.name,
       latitude: location.latitude,

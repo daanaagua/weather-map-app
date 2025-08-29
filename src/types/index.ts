@@ -44,11 +44,17 @@ export interface WeatherData {
     weather_code: number[];
     precipitation_sum: number[];
   };
+  location?: {
+    name: string;
+    latitude: number;
+    longitude: number;
+  };
 }
 
 export interface WeatherLocation {
   name: string;
-  coordinates: Coordinates;
+  latitude: number;
+  longitude: number;
   weather?: WeatherData;
 }
 

@@ -34,11 +34,40 @@ export async function loadGeoData(city: CityType): Promise<GeoData> {
 }
 
 /**
- * 将GeoJSON坐标转换为SVG路径
+ * 将Polygon坐标转换为SVG路径
  */
-export function coordinatesToSVGPath(coordinates: number[][][], bounds: MapBounds): string {
+export function polygonToSVGPath(coordinates: number[][][], bounds: MapBounds): string {
   const paths: string[] = [];
   
+  // Polygon coordinates: [ring][coordinate][lng, lat]
+  coordinates.forEach((ring, ringIndex) => {
+    const pathCommands: string[] = [];
+    
+    ring.forEach((coord, coordIndex) => {
+      const [lng, lat] = coord;
+      const { x, y } = projectCoordinate({ lat, lng }, bounds);
+      
+      if (coordIndex === 0) {
+        pathCommands.push(`M ${x} ${y}`);
+      } else {
+        pathCommands.push(`L ${x} ${y}`);
+      }
+    });
+    
+    pathCommands.push('Z'); // 闭合路径
+    paths.push(pathCommands.join(' '));
+  });
+  
+  return paths.join(' ');
+}
+
+/**
+ * 将MultiPolygon坐标转换为SVG路径
+ */
+export function multiPolygonToSVGPath(coordinates: number[][][][], bounds: MapBounds): string {
+  const paths: string[] = [];
+  
+  // MultiPolygon coordinates: [polygon][ring][coordinate][lng, lat]
   coordinates.forEach(polygon => {
     polygon.forEach((ring, ringIndex) => {
       const pathCommands: string[] = [];
@@ -60,6 +89,21 @@ export function coordinatesToSVGPath(coordinates: number[][][], bounds: MapBound
   });
   
   return paths.join(' ');
+}
+
+/**
+ * 通用的几何体到SVG路径转换函数
+ */
+export function geometryToSVGPath(geometry: { type: string; coordinates: any }, bounds: MapBounds): string {
+  switch (geometry.type) {
+    case 'Polygon':
+      return polygonToSVGPath(geometry.coordinates, bounds);
+    case 'MultiPolygon':
+      return multiPolygonToSVGPath(geometry.coordinates, bounds);
+    default:
+      console.warn(`Unsupported geometry type: ${geometry.type}`);
+      return '';
+  }
 }
 
 /**

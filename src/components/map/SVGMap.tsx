@@ -5,7 +5,7 @@ import { GeoData, GeoFeature, Coordinates } from '@/types';
 import { 
   loadCombinedMapData, 
   calculateBounds, 
-  coordinatesToSVGPath, 
+  geometryToSVGPath, 
   projectCoordinate,
   getRegionCenter,
   MapBounds 
@@ -194,9 +194,9 @@ const SVGMap: React.FC<SVGMapProps> = ({
         <g transform={`translate(${panOffset.x}, ${panOffset.y}) scale(${zoomLevel})`}>
         {/* 地图区域 */}
         {mapData.features.map((feature, index) => {
-          if (feature.geometry.type !== 'MultiPolygon') return null;
+          if (feature.geometry.type !== 'Polygon' && feature.geometry.type !== 'MultiPolygon') return null;
           
-          const path = coordinatesToSVGPath(feature.geometry.coordinates, bounds);
+          const path = geometryToSVGPath(feature.geometry, bounds);
           const regionName = feature.properties.name;
           
           return (
