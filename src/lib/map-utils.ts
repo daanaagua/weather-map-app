@@ -1,17 +1,34 @@
 import { GeoData, GeoFeature, Coordinates } from '@/types';
 
 /**
- * 加载GeoJSON数据
+ * 支持的城市类型
  */
-export async function loadGeoData(region: 'shanghai' | 'zhejiang'): Promise<GeoData> {
+export type CityType = 'shanghai' | 'hangzhou' | 'huzhou' | 'jiaxing' | 'ningbo' | 'shaoxing' | 'zhoushan';
+
+/**
+ * 加载单个城市的GeoJSON数据
+ */
+export async function loadGeoData(city: CityType): Promise<GeoData> {
+  // Map English city names to Chinese file names
+  const cityFileMap: Record<CityType, string> = {
+    'shanghai': 'shanghai.geoJson',
+    'hangzhou': '杭州市.geoJson',
+    'huzhou': '湖州市.geoJson',
+    'jiaxing': '嘉兴市.geoJson',
+    'ningbo': '宁波市.geoJson',
+    'shaoxing': '绍兴市.geoJson',
+    'zhoushan': '舟山市.geoJson'
+  };
+  
   try {
-    const response = await fetch(`/data/${region}.geoJson`);
+    const fileName = cityFileMap[city];
+    const response = await fetch(`/data/${fileName}`);
     if (!response.ok) {
-      throw new Error(`Failed to load ${region} geo data`);
+      throw new Error(`Failed to load ${fileName}`);
     }
     return await response.json();
   } catch (error) {
-    console.error(`Error loading ${region} geo data:`, error);
+    console.error(`Error loading ${city} geo data:`, error);
     throw error;
   }
 }
@@ -139,22 +156,37 @@ export function getRegionCenter(feature: GeoFeature): Coordinates {
 }
 
 /**
- * 合并上海和浙江的地图数据
+ * 加载所有城市的区县级地图数据
  */
 export async function loadCombinedMapData(): Promise<{
-  shanghai: GeoData;
-  zhejiang: GeoData;
+  cities: Record<CityType, GeoData>;
   combined: GeoData;
 }> {
-  const [shanghai, zhejiang] = await Promise.all([
-    loadGeoData('shanghai'),
-    loadGeoData('zhejiang')
-  ]);
-
-  const combined: GeoData = {
-    type: 'FeatureCollection',
-    features: [...shanghai.features, ...zhejiang.features]
-  };
-
-  return { shanghai, zhejiang, combined };
+  const cityNames: CityType[] = ['shanghai', 'hangzhou', 'huzhou', 'jiaxing', 'ningbo', 'shaoxing', 'zhoushan'];
+  
+  try {
+    // 并行加载所有城市的数据
+    const cityDataArray = await Promise.all(
+      cityNames.map(city => loadGeoData(city))
+    );
+    
+    // 创建城市数据映射
+    const cities: Record<CityType, GeoData> = {} as Record<CityType, GeoData>;
+    cityNames.forEach((city, index) => {
+      cities[city] = cityDataArray[index];
+    });
+    
+    // 合并所有特征
+    const allFeatures = cityDataArray.flatMap(cityData => cityData.features);
+    
+    const combined: GeoData = {
+      type: 'FeatureCollection',
+      features: allFeatures
+    };
+    
+    return { cities, combined };
+  } catch (error) {
+    console.error('Error loading combined map data:', error);
+    throw error;
+  }
 }
