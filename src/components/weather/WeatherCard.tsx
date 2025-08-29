@@ -27,20 +27,14 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
   
   // 获取天气描述
   const getWeatherDescription = (code: number): string => {
-    return WEATHER_CODES[code] || '未知天气';
+    const weatherInfo = WEATHER_CODES[code];
+    return weatherInfo ? weatherInfo.description : '未知天气';
   };
   
   // 获取天气图标
   const getWeatherIcon = (code: number): string => {
-    if (code === 0) return '☀️'; // 晴天
-    if (code <= 3) return '⛅'; // 多云
-    if (code <= 48) return '🌫️'; // 雾
-    if (code <= 67) return '🌧️'; // 雨
-    if (code <= 77) return '🌨️'; // 雪
-    if (code <= 82) return '🌦️'; // 阵雨
-    if (code <= 86) return '🌨️'; // 阵雪
-    if (code <= 99) return '⛈️'; // 雷暴
-    return '🌤️'; // 默认
+    const weatherInfo = WEATHER_CODES[code];
+    return weatherInfo ? weatherInfo.icon : '🌤️';
   };
   
   // 获取风向
