@@ -40,7 +40,7 @@ export function polygonToSVGPath(coordinates: number[][][], bounds: MapBounds): 
   const paths: string[] = [];
   
   // Polygon coordinates: [ring][coordinate][lng, lat]
-  coordinates.forEach((ring, ringIndex) => {
+  coordinates.forEach((ring) => {
     const pathCommands: string[] = [];
     
     ring.forEach((coord, coordIndex) => {
@@ -69,7 +69,7 @@ export function multiPolygonToSVGPath(coordinates: number[][][][], bounds: MapBo
   
   // MultiPolygon coordinates: [polygon][ring][coordinate][lng, lat]
   coordinates.forEach(polygon => {
-    polygon.forEach((ring, ringIndex) => {
+    polygon.forEach((ring) => {
       const pathCommands: string[] = [];
       
       ring.forEach((coord, coordIndex) => {
@@ -94,12 +94,12 @@ export function multiPolygonToSVGPath(coordinates: number[][][][], bounds: MapBo
 /**
  * 通用的几何体到SVG路径转换函数
  */
-export function geometryToSVGPath(geometry: { type: string; coordinates: any }, bounds: MapBounds): string {
+export function geometryToSVGPath(geometry: { type: string; coordinates: number[][][] | number[][][][] }, bounds: MapBounds): string {
   switch (geometry.type) {
     case 'Polygon':
-      return polygonToSVGPath(geometry.coordinates, bounds);
+      return polygonToSVGPath(geometry.coordinates as number[][][], bounds);
     case 'MultiPolygon':
-      return multiPolygonToSVGPath(geometry.coordinates, bounds);
+      return multiPolygonToSVGPath(geometry.coordinates as number[][][][], bounds);
     default:
       console.warn(`Unsupported geometry type: ${geometry.type}`);
       return '';
@@ -129,7 +129,8 @@ export function calculateBounds(geoData: GeoData, padding: number = 0.1): MapBou
 
   geoData.features.forEach(feature => {
     if (feature.geometry.type === 'MultiPolygon') {
-      feature.geometry.coordinates.forEach(polygon => {
+      const coordinates = feature.geometry.coordinates as number[][][][];
+      coordinates.forEach(polygon => {
         polygon.forEach(ring => {
           ring.forEach(coord => {
             const [lng, lat] = coord;
@@ -138,6 +139,17 @@ export function calculateBounds(geoData: GeoData, padding: number = 0.1): MapBou
             minLng = Math.min(minLng, lng);
             maxLng = Math.max(maxLng, lng);
           });
+        });
+      });
+    } else if (feature.geometry.type === 'Polygon') {
+      const coordinates = feature.geometry.coordinates as number[][][];
+      coordinates.forEach(ring => {
+        ring.forEach(coord => {
+          const [lng, lat] = coord;
+          minLat = Math.min(minLat, lat);
+          maxLat = Math.max(maxLat, lat);
+          minLng = Math.min(minLng, lng);
+          maxLng = Math.max(maxLng, lng);
         });
       });
     }

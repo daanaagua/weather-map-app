@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, MapPin, Loader2 } from 'lucide-react';
 import { WeatherData } from '@/types';
@@ -68,7 +67,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onLocationSelect, className = '' 
 
       setResults(filteredResults);
       setShowResults(filteredResults.length > 0);
-    } catch (err) {
+    } catch (error) {
       setError('搜索失败，请重试');
       setResults([]);
       setShowResults(false);
@@ -100,7 +99,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onLocationSelect, className = '' 
       precipitation: current.precipitation,
       windDirection: current.wind_direction_10m,
       apparentTemperature: Math.round(current.apparent_temperature),
-      isDay: current.is_day === 1
+      isDay: current.is_day === 1,
+      current: data.current,
+      daily: data.daily
     };
   }, []);
 
@@ -113,7 +114,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onLocationSelect, className = '' 
     try {
       const weatherData = await fetchWeatherData(location);
       onLocationSelect(location, weatherData);
-    } catch (err) {
+    } catch (error) {
       setError('获取天气数据失败');
     } finally {
       setIsLoadingWeather(false);

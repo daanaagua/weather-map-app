@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { GeoData, GeoFeature, Coordinates } from '@/types';
+import { GeoData, GeoFeature } from '@/types';
 import { 
   loadCombinedMapData, 
   calculateBounds, 

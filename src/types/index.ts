@@ -18,8 +18,8 @@ export interface GeoFeature {
     site: string;
   };
   geometry: {
-    type: 'MultiPolygon';
-    coordinates: number[][][][];
+    type: 'Polygon' | 'MultiPolygon';
+    coordinates: number[][][] | number[][][][];
   };
 }
 
@@ -30,12 +30,28 @@ export interface GeoData {
 
 // 天气数据相关类型
 export interface WeatherData {
+  temperature?: number; // 添加temperature属性用于SearchBox
+  humidity?: number; // 添加humidity属性用于SearchBox
+  windSpeed?: number; // 添加windSpeed属性用于SearchBox
+  weatherCode?: number; // 添加weatherCode属性用于SearchBox
+  pressure?: number; // 添加pressure属性用于SearchBox
+  cloudCover?: number; // 添加cloudCover属性用于SearchBox
+  precipitation?: number; // 添加precipitation属性用于SearchBox
+  windDirection?: number; // 添加windDirection属性用于SearchBox
+  apparentTemperature?: number; // 添加apparentTemperature属性用于SearchBox
+  isDay?: boolean; // 添加isDay属性用于SearchBox
   current: {
+    time: string; // 添加time属性
     temperature_2m: number;
     relative_humidity_2m: number;
     wind_speed_10m: number;
     wind_direction_10m: number;
     weather_code: number;
+    pressure_msl: number; // 添加pressure_msl属性
+    cloud_cover: number; // 添加cloud_cover属性
+    precipitation: number; // 添加precipitation属性
+    apparent_temperature: number; // 添加apparent_temperature属性
+    is_day: number; // 添加is_day属性
   };
   daily: {
     time: string[];
